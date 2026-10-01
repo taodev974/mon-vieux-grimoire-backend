@@ -1,5 +1,14 @@
 const http = require("http");
 const app = require("./app");
+const mongoose = require("mongoose");
+require("dotenv").config();
+console.log("MONGO_URI =", process.env.MONGO_URI);
+
+// Connexion à MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch((error) => console.log("Connexion à MongoDB échouée :", error));
 
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
