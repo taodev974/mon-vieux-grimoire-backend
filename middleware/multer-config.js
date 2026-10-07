@@ -1,4 +1,5 @@
 const multer = require("multer");
+const path = require("path");
 
 const MIME_TYPES = {
   "image/jpg": "jpg",
@@ -7,15 +8,18 @@ const MIME_TYPES = {
   "image/webp": "webp",
 };
 
+// Multer associe le fichier d'image à la requête (req.file) en utilisant le stockage configuré:
 const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "images");
-  },
+  // Le dossier de destination pour les fichiers d'image:
+  destination: "images",
+  // Le nom du fichier d'image:
   filename: (req, file, callback) => {
-    const name = file.originalname.split(" ").join("_");
+    const name = path.parse(file.originalname).name.split(" ").join("_"); // Remplace les espaces par des underscores
     const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + "." + extension);
-  },
+    
+    // Génère un nom de fichier unique (avec la date) pour éviter les conflits au format "timestamp-nom.extension":
+    callback(null, Date.now() + "-" + name + "." + extension);
+  }
 });
 
 module.exports = multer({ storage }).single("image");

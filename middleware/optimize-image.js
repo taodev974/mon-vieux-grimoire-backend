@@ -4,22 +4,25 @@ const fs = require("fs");
 
 module.exports = async (req, res, next) => {
   if (!req.file) return next();
+  
+  console.log("Fichier d'image à optimiser:", req.file.filename)
 
   const filePath = req.file.path;
-  const optimizedPath = path.join(
-    "images",
-    req.file.filename.split(".")[0] + ".webp",
-  );
+  // Retire uniquement la dernière extension, pour conserver le timestamp ajouté par multer
+  const optimizedName = path.parse(req.file.filename).name + ".webp";
+  const optimizedPath = path.join("images", optimizedName);
 
   try {
+    // Optimise l'image en format WebP avec une qualité de 80%:
     await sharp(filePath).webp({ quality: 80 }).toFile(optimizedPath);
 
-    fs.unlinkSync(filePath); // supprime l'image originale
+    // Supprime le fichier d'origine après optimisation:
+    fs.unlinkSync(filePath);
 
-    req.file.filename = req.file.filename.split(".")[0] + ".webp";
+    // Met à jour le nom du fichier dans la requête pour qu'il pointe vers l'image optimisée:
+    req.file.filename = optimizedName;
     next();
   } catch (error) {
-    console.error("Erreur optimisation image :", error);
-    next(error);
+    res.status(500).json({ message: "Erreur optimisation de l'image" });
   }
 };

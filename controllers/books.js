@@ -6,10 +6,18 @@ exports.getAllBooks = (req, res) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+exports.getBook = (req, res) => {
+  // @TODO: Récupérer le livre par son ID via le paramètre de requête.
+};
+
 exports.createBook = (req, res) => {
   try {
     const bookObject = JSON.parse(req.body.book);
 
+    console.log("Livre reçu pour publication:", bookObject);
+
+    // Création du livre avec les données reçues dans MongoDB:
+    // Création d'un document MongoDB:
     const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
@@ -18,6 +26,7 @@ exports.createBook = (req, res) => {
       ratings: [],
     });
 
+    // Sauvegarde du livre dans la base de données MongoDB:
     book
       .save()
       .then(() => res.status(201).json({ message: "Livre créé !" }))
