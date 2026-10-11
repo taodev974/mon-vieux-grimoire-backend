@@ -1,16 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const booksCtrl = require("../controllers/books");
+
 const auth = require("../middleware/auth");
 const multer = require("../middleware/multer-config");
 const optimizeImage = require("../middleware/optimize-image");
 
+const booksCtrl = require("../controllers/books");
+
+// Récupérer tous les livres
 router.get("/", booksCtrl.getAllBooks);
-router.post("/", auth, booksCtrl.createBook);
-router.put("/:id", auth, booksCtrl.modifyBook);
-router.delete("/:id", auth, booksCtrl.deleteBook);
-router.post("/:id/rating", auth, booksCtrl.rateBook);
+
+// Récupérer un livre par ID
+router.get("/:id", booksCtrl.getBook);
+
+// Créer un livre (auth → upload → optimisation → création)
 router.post("/", auth, multer, optimizeImage, booksCtrl.createBook);
+
+// Modifier un livre
 router.put("/:id", auth, multer, optimizeImage, booksCtrl.modifyBook);
+
+// Supprimer un livre
+router.delete("/:id", auth, booksCtrl.deleteBook);
+
+// Noter un livre
+router.post("/:id/rating", auth, booksCtrl.rateBook);
 
 module.exports = router;

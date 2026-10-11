@@ -10,6 +10,7 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch((error) => console.log("Connexion à MongoDB échouée :", error));
 
+// Normalisation du port
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
   if (isNaN(port)) return val;
@@ -20,10 +21,13 @@ const normalizePort = (val) => {
 const port = normalizePort(process.env.PORT || "4000");
 app.set("port", port);
 
+// Gestion des erreurs du serveur
 const errorHandler = (error) => {
   if (error.syscall !== "listen") throw error;
+
   const address = server.address();
   const bind = typeof address === "string" ? "pipe " + address : "port " + port;
+
   switch (error.code) {
     case "EACCES":
       console.error(bind + " requires elevated privileges.");
@@ -36,13 +40,18 @@ const errorHandler = (error) => {
   }
 };
 
+// Création du serveur HTTP
 const server = http.createServer(app);
 
+// Gestion des erreurs
 server.on("error", errorHandler);
+
+// Démarrage du serveur
 server.on("listening", () => {
   const address = server.address();
   const bind = typeof address === "string" ? "pipe " + address : "port " + port;
   console.log("Listening on " + bind);
 });
 
+// Écoute du port
 server.listen(port);
