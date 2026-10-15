@@ -41,7 +41,10 @@ exports.createBook = (req, res) => {
 };
 
 // Modifier un livre
-exports.modifyBook = (req, res) => {
+exports.modifyBook = (req, res, next) => {
+  const bookId = req.params.id;
+
+  // Vérifier si une nouvelle image est uploadée
   const bookObject = req.file
     ? {
         ...JSON.parse(req.body.book),
@@ -49,9 +52,35 @@ exports.modifyBook = (req, res) => {
       }
     : { ...req.body };
 
-  Book.findByIdAndUpdate(req.params.id, bookObject, { new: true })
-    .then(() => res.status(200).json({ message: "Livre modifié !" }))
-    .catch((error) => res.status(400).json({ error }));
+  // Empêcher la modification du userId
+  delete bookObject.userId;
+
+  // Empêcher la modification de averageRating
+  delete bookObject.averageRating;
+
+  Book.findOne({ _id: bookId })
+    .then((book) => {
+      if (!book) {
+        return res.status(404).json({ message: "Livre non trouvé" });
+      }
+
+      // Vérifier que l'utilisateur est bien le propriétaire
+      if (book.userId !== req.auth.userId) {
+        return res.status(403).json({ message: "Requête non autorisée" });
+      }
+
+      // Si nouvelle image → supprimer l'ancienne
+      if (req.file) {
+        const oldFilename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${oldFilename}`, () => {});
+      }
+
+      // Mise à jour du livre
+      Book.updateOne({ _id: bookId }, { ...bookObject, _id: bookId })
+        .then(() => res.status(200).json({ message: "Livre modifié !" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // Supprimer un livre
