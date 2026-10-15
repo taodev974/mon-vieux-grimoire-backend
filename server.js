@@ -2,7 +2,6 @@ const http = require("http");
 const app = require("./app");
 const mongoose = require("mongoose");
 require("dotenv").config();
-console.log("MONGO_URI =", process.env.MONGO_URI);
 
 // Connexion à MongoDB
 mongoose
