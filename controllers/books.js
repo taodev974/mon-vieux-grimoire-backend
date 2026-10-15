@@ -1,5 +1,6 @@
 const Book = require("../models/Book");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 // Récupérer tous les livres
 exports.getAllBooks = (req, res) => {
@@ -84,12 +85,30 @@ exports.modifyBook = (req, res, next) => {
 };
 
 // Supprimer un livre
-exports.deleteBook = (req, res) => {
-  Book.findById(req.params.id)
+exports.deleteBook = (req, res, next) => {
+  const bookId = req.params.id;
+
+  // Vérifier que l'ID est valide
+  if (!mongoose.Types.ObjectId.isValid(bookId)) {
+    return res.status(404).json({ message: "Livre non trouvé" });
+  }
+
+  Book.findOne({ _id: bookId })
     .then((book) => {
+      if (!book) {
+        return res.status(404).json({ message: "Livre non trouvé" });
+      }
+
+      // Vérifier que l'utilisateur est bien le propriétaire
+      if (book.userId !== req.auth.userId) {
+        return res.status(403).json({ message: "Requête non autorisée" });
+      }
+
+      // Supprimer l'image associée
       const filename = book.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
-        Book.findByIdAndDelete(req.params.id)
+        // Supprimer le livre
+        Book.deleteOne({ _id: bookId })
           .then(() => res.status(200).json({ message: "Livre supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
       });
