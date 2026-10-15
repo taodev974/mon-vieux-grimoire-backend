@@ -17,8 +17,15 @@ module.exports = async (req, res, next) => {
     // Chemin du fichier optimisé
     const optimizedPath = path.join("images", optimizedName);
 
-    // Conversion en WebP
-    await sharp(originalPath).webp({ quality: 80 }).toFile(optimizedPath);
+    // Redimension + conversion WebP
+    await sharp(originalPath)
+      .resize({
+        width: 1024, // ou 800 selon ton front
+        height: 1024,
+        fit: "cover",
+      })
+      .webp({ quality: 80 })
+      .toFile(optimizedPath);
 
     // Suppression du fichier original
     fs.unlinkSync(originalPath);
@@ -30,6 +37,11 @@ module.exports = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Erreur optimisation image :", error);
+
+    // Supprimer le fichier original en cas d'échec
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({ error: "Erreur lors de l'optimisation de l'image" });
   }
 };

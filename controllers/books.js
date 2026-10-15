@@ -21,14 +21,19 @@ exports.createBook = (req, res) => {
   try {
     const bookObject = JSON.parse(req.body.book);
 
+    // Récupérer la note initiale envoyée par le front
+    const initialRating = bookObject.ratings?.[0]?.grade || null;
+
     // Création du livre avec les données reçues dans MongoDB:
     // Création d'un document MongoDB:
     const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
       imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-      averageRating: 0,
-      ratings: [],
+      ratings: initialRating
+        ? [{ userId: req.auth.userId, grade: initialRating }]
+        : [],
+      averageRating: initialRating || 0,
     });
 
     // Sauvegarde du livre dans la base de données MongoDB:
@@ -117,26 +122,50 @@ exports.deleteBook = (req, res, next) => {
 };
 
 // Noter un livre
-exports.rateBook = (req, res) => {
-  const rating = {
-    userId: req.auth.userId,
-    grade: req.body.rating,
-  };
+exports.rateBook = (req, res, next) => {
+  const bookId = req.params.id;
+  const userId = req.auth.userId;
+  const grade = req.body.rating;
 
-  Book.findById(req.params.id)
+  // Vérifier que l'ID est valide
+  if (!mongoose.Types.ObjectId.isValid(bookId)) {
+    return res.status(404).json({ message: "Livre non trouvé" });
+  }
+
+  // Vérifier que la note est correcte
+  if (grade < 0 || grade > 5) {
+    return res
+      .status(400)
+      .json({ message: "La note doit être comprise entre 0 et 5" });
+  }
+
+  Book.findOne({ _id: bookId })
     .then((book) => {
-      book.ratings.push(rating);
+      if (!book) {
+        return res.status(404).json({ message: "Livre non trouvé" });
+      }
 
-      // Recalcul de la note moyenne
+      // Vérifier que l'utilisateur n'a pas déjà noté ce livre
+      if (book.ratings.some((r) => r.userId.toString() === userId)) {
+        return res
+          .status(400)
+          .json({ message: "Vous avez déjà noté ce livre" });
+      }
+
+      // Ajouter la nouvelle note
+      book.ratings.push({ userId: userId, grade: grade });
+
+      // Recalculer la moyenne
       const total = book.ratings.reduce((sum, r) => sum + r.grade, 0);
       book.averageRating = total / book.ratings.length;
 
+      // Sauvegarder
       book
         .save()
-        .then(() => res.status(200).json(book))
+        .then((updatedBook) => res.status(200).json(updatedBook))
         .catch((error) => res.status(400).json({ error }));
     })
-    .catch((error) => res.status(404).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // Les 3 livres les mieux notés
