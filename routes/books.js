@@ -7,6 +7,9 @@ const optimizeImage = require("../middleware/optimize-image");
 
 const booksCtrl = require("../controllers/books");
 
+// Route des 3 meilleurs livres
+router.get("/bestrating", booksCtrl.getBestRating);
+
 // Récupérer tous les livres
 router.get("/", booksCtrl.getAllBooks);
 
