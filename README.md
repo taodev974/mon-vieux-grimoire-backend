@@ -1,34 +1,35 @@
-Projet 6 : Mon Vieux Grimoire (Backend)
-📌 Description du projet
-Ce dépôt contient le backend du projet Mon Vieux Grimoire, développé dans le cadre de la formation OpenClassrooms.
+# 📘 Projet 6 : Mon Vieux Grimoire (Backend)
+
+## 📌 Description du projet
+
+Ce dépôt contient le backend du projet _Mon Vieux Grimoire_, développé dans le cadre de la formation OpenClassrooms.  
 L’objectif est de fournir une API sécurisée permettant :
 
-la création de compte et la connexion utilisateur
-
-l’ajout, la modification et la suppression de livres
-
-l’upload et l’optimisation d’images (Multer + Sharp)
-
-la notation des livres par les utilisateurs
-
-le calcul automatique de la note moyenne
-
-la récupération des 3 livres les mieux notés
+- la création de compte et la connexion utilisateur
+- l’ajout, la modification et la suppression de livres
+- l’upload et l’optimisation d’images (Multer + Sharp)
+- la notation des livres par les utilisateurs
+- le calcul automatique de la note moyenne
+- la récupération des 3 livres les mieux notés
 
 Le frontend est fourni par OpenClassrooms et communique avec cette API.
 
-🚀 Installation
-1️⃣ Cloner le dépôt
-Code
+---
+
+## 🚀 Installation
+
+### 1️⃣ Cloner le dépôt
+
+```bash
 git clone https://github.com/taodev974/Projet-6.git
 cd Projet-6
 2️⃣ Installer les dépendances
-Code
+bash
 npm install
 🔐 Configuration du fichier .env
 Crée un fichier .env à la racine du projet :
 
-Code
+env
 MONGO_URI=Votre_URL_MongoDB_Atlas
 JWT_SECRET=Votre_Clé_Secrète
 PORT=4000
@@ -45,12 +46,12 @@ ajouter l’IP 0.0.0.0/0 (ou l’IP de l’évaluateur)
 ✔ Utilisateur MongoDB
 Créer un utilisateur avec :
 
-readWrite sur la base
+rôle readWrite
 
 identifiants à fournir dans le .env
 
 ▶️ Lancer le serveur
-Code
+bash
 npm start
 L’API sera disponible sur :
 
@@ -58,24 +59,38 @@ Code
 http://localhost:4000
 📁 Structure du projet
 Code
-controllers/ → logique métier (CRUD, notation, moyenne)
-middleware/ → auth JWT, gestion des images
-models/ → modèles Mongoose (User, Book)
-routes/ → routes de l’API
-images/ → dossier des images optimisées (.gitkeep)
-app.js → configuration Express
-server.js → connexion MongoDB + lancement serveur
+controllers/      → logique métier (CRUD, notation, moyenne)
+middleware/       → auth JWT, optimisation d’images (Sharp)
+models/           → modèles Mongoose (User, Book)
+routes/           → routes de l’API
+images/           → dossier des images optimisées (.gitkeep)
+app.js            → configuration Express
+server.js         → connexion MongoDB + lancement serveur
 🔧 Fonctionnalités principales
 📚 Livres
 POST /api/books → créer un livre
 
 GET /api/books → récupérer tous les livres
 
-GET /api/books/:id → récupérer un livre
+GET /api/books/:id → récupérer un livre (404 si non trouvé)
 
 PUT /api/books/:id → modifier un livre
 
+suppression automatique de :
+
+userId
+
+averageRating
+
+ratings
+
+suppression de l’ancienne image optimisée
+
+suppression du fichier brut uploadé
+
 DELETE /api/books/:id → supprimer un livre
+
+suppression automatique de l’image optimisée
 
 GET /api/books/bestrating → top 3 des livres les mieux notés
 
@@ -95,7 +110,7 @@ Conversion en WebP via Sharp
 
 Redimensionnement
 
-Suppression de l’ancienne image lors d’une modification
+Suppression automatique des fichiers inutiles
 
 🔒 Sécurité
 Hash du mot de passe (bcrypt)
@@ -103,6 +118,8 @@ Hash du mot de passe (bcrypt)
 Authentification via JWT
 
 Vérification du propriétaire du livre pour PUT/DELETE
+
+Protection des champs sensibles (userId, ratings, averageRating)
 
 Validation des données envoyées
 
@@ -135,3 +152,4 @@ Le projet est prêt à être lancé par l’évaluateur
 👤 Auteur
 Tony — Formation Développeur Web OpenClassrooms
 Backend réalisé en Node.js, Express, MongoDB
+```
