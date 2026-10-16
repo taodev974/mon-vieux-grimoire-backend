@@ -64,6 +64,9 @@ exports.modifyBook = (req, res, next) => {
   // Empêcher la modification de averageRating
   delete bookObject.averageRating;
 
+  // Empêcher la modification de averageRating
+  delete bookObject.ratings;
+
   Book.findOne({ _id: bookId })
     .then((book) => {
       if (!book) {
@@ -129,7 +132,7 @@ exports.deleteBook = (req, res, next) => {
         return res.status(403).json({ message: "Requête non autorisée" });
       }
 
-      // Supprimer l'image associée
+      // Supprimer l'image optimisée associée au livre
       const filename = book.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
         // Supprimer le livre
