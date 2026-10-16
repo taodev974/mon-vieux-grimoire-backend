@@ -11,9 +11,20 @@ exports.getAllBooks = (req, res) => {
 
 // Récupérer un livre par ID
 exports.getBook = (req, res) => {
+  const bookId = req.params.id;
+
+  // Vérifier que l'ID est valide
+  if (!mongoose.Types.ObjectId.isValid(bookId)) {
+    return res.status(404).json({ message: "Livre non trouvé" });
+  }
   Book.findById(req.params.id)
-    .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(404).json({ error }));
+    .then((book) => {
+      if (!book) {
+        return res.status(404).json({ message: "Livre non trouvé" });
+      }
+      res.status(200).json(book);
+    })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // Créer un livre
