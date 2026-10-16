@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
     // Mise à jour du fichier dans req.file
     req.file.filename = optimizedName;
     req.file.path = optimizedPath;
-
+    req.file.originalPath = originalPath;
     next();
   } catch (error) {
     console.error("Erreur Sharp:", error);

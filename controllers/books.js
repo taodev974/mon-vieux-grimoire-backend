@@ -67,11 +67,19 @@ exports.modifyBook = (req, res, next) => {
   Book.findOne({ _id: bookId })
     .then((book) => {
       if (!book) {
+        // Si une image brute a été uploadée → la supprimer
+        if (req.file && req.file.originalPath) {
+          fs.unlink(req.file.originalPath, () => {});
+        }
         return res.status(404).json({ message: "Livre non trouvé" });
       }
 
       // Vérifier que l'utilisateur est bien le propriétaire
       if (book.userId !== req.auth.userId) {
+        // Supprimer l'image brute uploadée
+        if (req.file && req.file.originalPath) {
+          fs.unlink(req.file.originalPath, () => {});
+        }
         return res.status(403).json({ message: "Requête non autorisée" });
       }
 
@@ -83,8 +91,20 @@ exports.modifyBook = (req, res, next) => {
 
       // Mise à jour du livre
       Book.updateOne({ _id: bookId }, { ...bookObject, _id: bookId })
-        .then(() => res.status(200).json({ message: "Livre modifié !" }))
-        .catch((error) => res.status(400).json({ error }));
+        .then(() => {
+          // Supprimer l'image brute uploadée après succès
+          if (req.file && req.file.originalPath) {
+            fs.unlink(req.file.originalPath, () => {});
+          }
+          res.status(200).json({ message: "Livre modifié !" });
+        })
+        .catch((error) => {
+          // Supprimer l'image brute uploadée en cas d'erreur
+          if (req.file && req.file.originalPath) {
+            fs.unlink(req.file.originalPath, () => {});
+          }
+          res.status(400).json({ error });
+        });
     })
     .catch((error) => res.status(500).json({ error }));
 };
