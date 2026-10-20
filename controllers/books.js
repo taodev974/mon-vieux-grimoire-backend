@@ -75,7 +75,7 @@ exports.modifyBook = (req, res, next) => {
   // Empêcher la modification de averageRating
   delete bookObject.averageRating;
 
-  // Empêcher la modification de averageRating
+  // Empêcher la modification de Rating
   delete bookObject.ratings;
 
   Book.findOne({ _id: bookId })
@@ -85,6 +85,10 @@ exports.modifyBook = (req, res, next) => {
         if (req.file && req.file.originalPath) {
           fs.unlink(req.file.originalPath, () => {});
         }
+        // Supprimer l'image optimisée générée par Sharp
+        if (req.file && req.file.path) {
+          fs.unlink(req.file.path, () => {});
+        }
         return res.status(404).json({ message: "Livre non trouvé" });
       }
 
@@ -93,6 +97,10 @@ exports.modifyBook = (req, res, next) => {
         // Supprimer l'image brute uploadée
         if (req.file && req.file.originalPath) {
           fs.unlink(req.file.originalPath, () => {});
+        }
+        // Supprimer l'image optimisée générée par Sharp
+        if (req.file && req.file.path) {
+          fs.unlink(req.file.path, () => {});
         }
         return res.status(403).json({ message: "Requête non autorisée" });
       }
