@@ -27,28 +27,29 @@ cd Projet-6
 bash
 npm install
 🔐 Configuration du fichier .env
-Crée un fichier .env à la racine du projet :
-
-env
-MONGO_URI=Votre_URL_MongoDB_Atlas
-JWT_SECRET=Votre_Clé_Secrète
-PORT=4000
 Un fichier .env.example est fourni pour indiquer les variables nécessaires.
 
-🗄️ Configuration MongoDB Atlas
-Pour que l’évaluateur puisse lancer l’API :
+Pour exécuter le backend, créez un fichier .env à la racine du projet en utilisant les valeurs suivantes (compte dédié à la soutenance) :
 
+Code
+MONGO_URI=mongodb+srv://oc-evaluateur:oc-evaluateur123@cluster0.jzxsref.mongodb.net/?retryWrites=true&w=majority
+JWT_SECRET=mettez_n_importe_quoi
+PORT=4000
+🗄️ Configuration MongoDB Atlas
 ✔ Accès réseau
 Dans MongoDB Atlas → Network Access :
-
-ajouter l’IP 0.0.0.0/0 (ou l’IP de l’évaluateur)
+Autoriser l’IP 0.0.0.0/0 (accès global pour la soutenance).
 
 ✔ Utilisateur MongoDB
-Créer un utilisateur avec :
+Un utilisateur dédié à la soutenance est déjà configuré :
 
-rôle readWrite
+username : oc-evaluateur
 
-identifiants à fournir dans le .env
+password : oc-evaluateur123
+
+rôle : readWriteAnyDatabase
+
+Aucune autre action n’est nécessaire.
 
 ▶️ Lancer le serveur
 bash
@@ -76,17 +77,11 @@ GET /api/books/:id → récupérer un livre (404 si non trouvé)
 
 PUT /api/books/:id → modifier un livre
 
-suppression automatique de :
+suppression automatique :
 
-userId
+de l’ancienne image optimisée
 
-averageRating
-
-ratings
-
-suppression de l’ancienne image optimisée
-
-suppression du fichier brut uploadé
+du fichier brut uploadé
 
 DELETE /api/books/:id → supprimer un livre
 
