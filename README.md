@@ -22,7 +22,7 @@ Le frontend est fourni par OpenClassrooms et communique avec cette API.
 
 ```bash
 git clone https://github.com/taodev974/mon-vieux-grimoire-backend.git
-cd Projet-6
+cd backend
 2️⃣ Installer les dépendances
 bash
 npm install
