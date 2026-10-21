@@ -21,7 +21,7 @@ Le frontend est fourni par OpenClassrooms et communique avec cette API.
 ### 1️⃣ Cloner le dépôt
 
 ```bash
-git clone https://github.com/taodev974/Projet-6.git
+git clone https://github.com/taodev974/mon-vieux-grimoire-backend.git
 cd Projet-6
 2️⃣ Installer les dépendances
 bash
