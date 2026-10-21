@@ -32,7 +32,7 @@ Un fichier .env.example est fourni pour indiquer les variables nécessaires.
 Pour exécuter le backend, créez un fichier .env à la racine du projet en utilisant les valeurs suivantes (compte dédié à la soutenance) :
 
 Code
-MONGO_URI=mongodb+srv://oc-evaluateur:oc-evaluateur123@cluster0.jzxsref.mongodb.net/?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://oc-evaluateur:<password>@cluster0.jzxsref.mongodb.net/?retryWrites=true&w=majority
 JWT_SECRET=mettez_n_importe_quoi
 PORT=4000
 🗄️ Configuration MongoDB Atlas
@@ -45,7 +45,8 @@ Un utilisateur dédié à la soutenance est déjà configuré :
 
 username : oc-evaluateur
 
-password : oc-evaluateur123
+password : Le mot de passe de l’utilisateur sera fourni dans le fichier d’instructions pour l’évaluateur.
+
 
 rôle : readWriteAnyDatabase
 
